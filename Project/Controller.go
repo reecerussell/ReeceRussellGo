@@ -7,30 +7,30 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/reecerussell/ReeceRussellGo/Authentication"
 	"github.com/reecerussell/ReeceRussellGo/Database"
 	"github.com/reecerussell/ReeceRussellGo/Helpers"
 )
 
-// ProjectController ... A collection of functions for project api
-type ProjectController struct {
+// Controller ... A collection of functions for project api
+type Controller struct {
 	DataStore ProjectDataStore
 }
 
 // Init ... Initializes controller
-func (con *ProjectController) Init(db Database.Database, router *mux.Router) {
-	fmt.Printf("Initialising project controller with database connection string '%s'\n", db.ConnectionString)
+func (con *Controller) Init(db Database.Database, router *mux.Router) {
 	dataStore := ProjectDataStore{}
 	dataStore.Init(db)
 
-	router.HandleFunc("/api/projects", con.GetAll).Methods("GET")
-	router.HandleFunc("/api/projects/{id}", con.GetByID).Methods("GET")
-	router.HandleFunc("/api/projects", con.Add).Methods("POST")
-	router.HandleFunc("/api/projects/{id}", con.Update).Methods("PUT")
-	router.HandleFunc("/api/projects/{id}", con.Delete).Methods("DELETE")
+	router.HandleFunc("/api/projects", Authentication.Middleware(con.GetAll)).Methods("GET")
+	router.HandleFunc("/api/projects/{id}", Authentication.Middleware(con.GetByID)).Methods("GET")
+	router.HandleFunc("/api/projects", Authentication.Middleware(con.Add)).Methods("POST")
+	router.HandleFunc("/api/projects/{id}", Authentication.Middleware(con.Update)).Methods("PUT")
+	router.HandleFunc("/api/projects/{id}", Authentication.Middleware(con.Delete)).Methods("DELETE")
 }
 
 // GetByID ... Gets an individual project
-func (con *ProjectController) GetByID(w http.ResponseWriter, r *http.Request) {
+func (con *Controller) GetByID(w http.ResponseWriter, r *http.Request) {
 	Helpers.Headers(w)
 
 	params := mux.Vars(r)
@@ -49,11 +49,16 @@ func (con *ProjectController) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if (project == Project{}) {
+		Helpers.Status404(w)
+		return
+	}
+
 	json.NewEncoder(w).Encode(&project)
 }
 
 // GetAll ... Get all projects
-func (con *ProjectController) GetAll(w http.ResponseWriter, r *http.Request) {
+func (con *Controller) GetAll(w http.ResponseWriter, r *http.Request) {
 	Helpers.Headers(w)
 
 	projects, err := con.DataStore.Get()
@@ -67,7 +72,7 @@ func (con *ProjectController) GetAll(w http.ResponseWriter, r *http.Request) {
 }
 
 // Add ... Add project to database
-func (con *ProjectController) Add(w http.ResponseWriter, r *http.Request) {
+func (con *Controller) Add(w http.ResponseWriter, r *http.Request) {
 	Helpers.Headers(w)
 
 	var project Project
@@ -75,7 +80,6 @@ func (con *ProjectController) Add(w http.ResponseWriter, r *http.Request) {
 
 	id, err := con.DataStore.Add(project)
 	if err != nil {
-		fmt.Println(err.Error())
 		Helpers.Status500(w, err.Error())
 		return
 	}
@@ -85,7 +89,7 @@ func (con *ProjectController) Add(w http.ResponseWriter, r *http.Request) {
 }
 
 // Update ... Update project
-func (con *ProjectController) Update(w http.ResponseWriter, r *http.Request) {
+func (con *Controller) Update(w http.ResponseWriter, r *http.Request) {
 	Helpers.Headers(w)
 
 	params := mux.Vars(r)
@@ -117,7 +121,7 @@ func (con *ProjectController) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 // Delete ... Delete project
-func (con *ProjectController) Delete(w http.ResponseWriter, r *http.Request) {
+func (con *Controller) Delete(w http.ResponseWriter, r *http.Request) {
 	Helpers.Headers(w)
 
 	params := mux.Vars(r)

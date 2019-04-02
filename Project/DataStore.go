@@ -15,7 +15,6 @@ type ProjectDataStore struct {
 
 // Init ... Initalizes data store
 func (ds *ProjectDataStore) Init(db Database.Database) {
-	fmt.Printf("Initialising project data store with connection string '%s'\n", db.ConnectionString)
 	ds.Database = db
 }
 
@@ -23,11 +22,10 @@ func (ds *ProjectDataStore) Init(db Database.Database) {
 func (ds *ProjectDataStore) GetByID(id int) (project Project, err error) {
 
 	var proj Project
-	query := "SELECT * FROM [Projects] WHERE [Id] = ?"
+	query := "SELECT TOP 1 * FROM [Projects] WHERE [Id] = @Id"
 
 	rows, err := ds.Database.SelectByID(query, id)
 	if err != nil {
-		fmt.Println(err.Error())
 		return Project{}, err
 	}
 
@@ -114,13 +112,13 @@ func (ds *ProjectDataStore) Add(project Project) (id int, err error) {
 
 	query := "INSERT INTO [Projects] ([Name],[Description],[GithubLink],[ImageUrl]) VALUES (@Name,@Desc,@Git,@Img)"
 
-	lastID, rowsAffected, err := ds.Database.Insert(query,
-		sql.Named("@Name", project.Name),
-		sql.Named("@Desc", project.Description),
-		sql.Named("@Git", project.GithubLink),
-		sql.Named("@Img", project.ImageURL))
+	rowsAffected, lastID, err := ds.Database.Insert(query,
+		sql.Named("Name", project.Name),
+		sql.Named("Desc", project.Description),
+		sql.Named("Git", project.GithubLink),
+		sql.Named("Img", project.ImageURL))
 	if err != nil {
-		return 0, errors.New("Could not connect to database")
+		return 0, err
 	}
 
 	if rowsAffected < 1 {
@@ -139,11 +137,11 @@ func (ds *ProjectDataStore) Update(project Project) (err error) {
 	query := "UPDATE [Projects] SET [Name] = @Name, [Description] = @Desc, [GithubLink] = @Git, [ImageUrl] = @Img WHERE [Id] = @Id"
 
 	rowCnt, err := ds.Database.Update(query,
-		sql.Named("@Name", project.Name),
-		sql.Named("@Desc", project.Description),
-		sql.Named("@Git", project.GithubLink),
-		sql.Named("@Img", project.ImageURL),
-		sql.Named("@Id", project.ID))
+		sql.Named("Name", project.Name),
+		sql.Named("Desc", project.Description),
+		sql.Named("Git", project.GithubLink),
+		sql.Named("Img", project.ImageURL),
+		sql.Named("Id", project.ID))
 	if err != nil {
 		return err
 	}
@@ -163,7 +161,7 @@ func (ds *ProjectDataStore) Delete(id int) (err error) {
 
 	query := "DELETE FROM [Projects] WHERE [Id] = @Id"
 
-	rowCnt, err := ds.Database.Delete(query, sql.Named("@Id", id))
+	rowCnt, err := ds.Database.Delete(query, sql.Named("Id", id))
 	if err != nil {
 		return err
 	}

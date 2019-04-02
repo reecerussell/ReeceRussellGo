@@ -21,15 +21,7 @@ var (
 
 // Database ... Database type
 type Database struct {
-	ConnectionString string
-	Db               *sql.DB
-}
-
-// Init ... Initializes the database object
-func (database *Database) Init() {
-	database.ConnectionString = connectionString
-
-	fmt.Printf("Initialised database with connection string '%s'\n", connectionString)
+	Db *sql.DB
 }
 
 // Open ... Opens connection to database
@@ -134,14 +126,12 @@ func (database *Database) Insert(query string, params ...sql.NamedArg) (rowCnt i
 	}
 	defer stmt.Close()
 
-	var row *sql.Row
-
-	if len(params) > 0 {
-		row = stmt.QueryRowContext(ctx, params)
-	} else {
-		row = stmt.QueryRowContext(
-			ctx)
+	interfaceParams := make([]interface{}, len(params))
+	for i, d := range params {
+		interfaceParams[i] = d
 	}
+
+	row := stmt.QueryRowContext(ctx, interfaceParams...)
 
 	var newID int64
 	err = row.Scan(&newID)
@@ -169,11 +159,16 @@ func (database *Database) Update(query string, params ...sql.NamedArg) (rowCnt i
 		return -1, err
 	}
 
+	interfaceParams := make([]interface{}, len(params))
+	for i, d := range params {
+		interfaceParams[i] = d
+	}
+
 	// Execute non-query with named parameters
 	result, err := db.ExecContext(
 		ctx,
 		query,
-		params)
+		interfaceParams...)
 	if err != nil {
 		return -1, err
 	}
