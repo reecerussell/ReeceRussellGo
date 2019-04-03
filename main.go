@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/reecerussell/ReeceRussellGo/Authentication"
 	"github.com/reecerussell/ReeceRussellGo/Database"
 	"github.com/reecerussell/ReeceRussellGo/Experience"
 	"github.com/reecerussell/ReeceRussellGo/Home"
@@ -32,6 +33,8 @@ func main() {
 		port = productionPort
 	}
 
+	fmt.Printf("Opened port '%s'\n", port)
+
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), router))
 }
 
@@ -39,6 +42,9 @@ func main() {
 func InitControllers(database Database.Database, router *mux.Router) {
 	homeController := Home.HomeController{}
 	homeController.Init(database, router)
+
+	authController := Authentication.Controller{}
+	authController.Init()
 
 	projectController := Project.Controller{}
 	projectController.Init(database, router)
