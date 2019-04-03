@@ -20,9 +20,18 @@ func Middleware(next HandlerFunc) HandlerFunc {
 
 		args := strings.Split(header, " ")
 		scheme := args[0]
-		value := args[1]
+		token := args[1]
 
-		if scheme != "Bearer" || value != "reece" {
+		if scheme != "Bearer" {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		service := Service{}
+		service.Init()
+
+		success, err := service.ValidateToken(token)
+		if err != nil || !success {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
