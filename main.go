@@ -6,12 +6,11 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gorilla/mux"
 	"github.com/reecerussell/ReeceRussellGo/Authentication"
 	"github.com/reecerussell/ReeceRussellGo/Database"
 	"github.com/reecerussell/ReeceRussellGo/Experience"
 	"github.com/reecerussell/ReeceRussellGo/Home"
-
-	"github.com/gorilla/mux"
 	"github.com/reecerussell/ReeceRussellGo/Project"
 )
 
