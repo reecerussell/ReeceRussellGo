@@ -43,7 +43,7 @@ func InitControllers(database Database.Database, router *mux.Router) {
 	homeController.Init(database, router)
 
 	authController := Authentication.Controller{}
-	authController.Init()
+	authController.Init(router)
 
 	projectController := Project.Controller{}
 	projectController.Init(database, router)

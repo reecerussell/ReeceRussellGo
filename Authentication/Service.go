@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 )
 
@@ -48,6 +49,7 @@ func (service *Service) GetAuthToken(email string, password string) (token Acces
 		return AccessToken{}, err
 	}
 
+	fmt.Printf("Making request to: %s\n", getTokenURL)
 	resp, err := service.HTTPClient.Client.Post(getTokenURL,
 		"application/json",
 		bytes.NewBuffer(credBytes))
