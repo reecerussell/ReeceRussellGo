@@ -26,6 +26,8 @@ func (con *Controller) Init(router *mux.Router) {
 func (con *Controller) Login(w http.ResponseWriter, r *http.Request) {
 	Helpers.Headers(w)
 
+	fmt.Println("Login method, hit")
+
 	var loginCredential LoginCredential
 	_ = json.NewDecoder(r.Body).Decode(&loginCredential)
 

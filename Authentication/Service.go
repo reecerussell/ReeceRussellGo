@@ -44,17 +44,21 @@ func (service *Service) GetAuthToken(email string, password string) (token Acces
 		AppKey:   appKey,
 	}
 
+	fmt.Println("Making request")
+
 	credBytes, err := json.Marshal(credential)
 	if err != nil {
 		return AccessToken{}, err
 	}
+
+	fmt.Println("Parsed json")
 
 	fmt.Printf("Making request to: %s\n", getTokenURL)
 	resp, err := service.HTTPClient.Client.Post(getTokenURL,
 		"application/json",
 		bytes.NewBuffer(credBytes))
 	if err != nil {
-		return AccessToken{}, err
+		return AccessToken{}, errors.New("1: " + err.Error())
 	}
 
 	if resp.StatusCode != 200 {

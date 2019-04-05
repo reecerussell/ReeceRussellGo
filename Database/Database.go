@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	server           = "51.140.27.117"
-	database         = "ReeceRussellGo"
+	server           = "54.38.215.159"
+	database         = "ReeceRussell_Portfolio"
 	user             = "ReeceRussell"
 	password         = "Technic600"
 	connectionString = fmt.Sprintf("server=%s;database=%s;user id=%s; password=%s;", server, database, user, password)
@@ -26,7 +26,6 @@ type Database struct {
 
 // Open ... Opens connection to database
 func (database *Database) Open() {
-	fmt.Printf("Attempting to open a SQL connection to '%s'\n", connectionString)
 	db, err := sql.Open("sqlserver", connectionString)
 	if err != nil {
 		log.Fatal("Error creating connection pool: ", err.Error())
@@ -36,7 +35,6 @@ func (database *Database) Open() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	fmt.Printf("Connected!\n")
 
 	database.Db = db
 }
