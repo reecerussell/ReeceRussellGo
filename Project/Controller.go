@@ -85,7 +85,7 @@ func (con *Controller) Add(w http.ResponseWriter, r *http.Request) {
 	}
 
 	project.ID = int(id)
-	json.NewEncoder(w).Encode(project)
+	json.NewEncoder(w).Encode(&project)
 }
 
 // Update ... Update project
@@ -117,7 +117,7 @@ func (con *Controller) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(project)
+	json.NewEncoder(w).Encode(&project)
 }
 
 // Delete ... Delete project

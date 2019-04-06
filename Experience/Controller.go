@@ -83,7 +83,7 @@ func (con *Controller) Add(w http.ResponseWriter, r *http.Request) {
 	}
 
 	experience.ID = int(id)
-	json.NewEncoder(w).Encode(experience)
+	json.NewEncoder(w).Encode(&experience)
 }
 
 // Update ... Update experience
@@ -112,7 +112,7 @@ func (con *Controller) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(experience)
+	json.NewEncoder(w).Encode(&experience)
 }
 
 // Delete ... Delete experience
