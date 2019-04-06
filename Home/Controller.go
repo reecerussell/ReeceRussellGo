@@ -2,7 +2,6 @@ package Home
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/reecerussell/ReeceRussellGo/Database"
@@ -39,12 +38,7 @@ func (con *HomeController) Init(
 func (con *HomeController) GetViewData(w http.ResponseWriter, r *http.Request) {
 
 	reqHeader := r.Header.Get("Requested-By")
-	fmt.Println(reqHeader)
-
-	w.Write([]byte(reqHeader))
-	return
-
-	if reqHeader == "" || reqHeader != "reecerussell.com" {
+	if reqHeader != "reecerussell.com" {
 		w.WriteHeader(404)
 		return
 	}

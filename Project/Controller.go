@@ -23,7 +23,7 @@ func (con *Controller) Init(db Database.Database, router *mux.Router) {
 	dataStore.Init(db)
 
 	router.HandleFunc("/api/projects", Authentication.Middleware(con.GetAll)).Methods("GET")
-	router.HandleFunc("/api/projects/{id}", Authentication.Middleware(con.GetByID)).Methods("GET")
+	router.HandleFunc("/api/projects/{id}", con.GetByID).Methods("GET")
 	router.HandleFunc("/api/projects", Authentication.Middleware(con.Add)).Methods("POST")
 	router.HandleFunc("/api/projects/{id}", Authentication.Middleware(con.Update)).Methods("PUT")
 	router.HandleFunc("/api/projects/{id}", Authentication.Middleware(con.Delete)).Methods("DELETE")
