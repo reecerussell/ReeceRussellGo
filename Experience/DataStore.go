@@ -20,7 +20,7 @@ func (ds *ExperienceDataStore) Init(db Database.Database) {
 // GetByID ... Gets project from table
 func (ds *ExperienceDataStore) GetByID(id int) (experience Experience, err error) {
 
-	query := "SELECT TOP 1 * FROM [Experience] WHERE [Id] = @Id"
+	query := "SELECT TOP 1 * FROM [Experience] WHERE [Id] = @Id AND [Hidden] = 0"
 
 	rows, err := ds.Database.SelectByID(query, id)
 	if err != nil {
@@ -69,7 +69,7 @@ func (ds *ExperienceDataStore) GetByID(id int) (experience Experience, err error
 
 // Get ... Gets projects from table
 func (ds *ExperienceDataStore) Get() (experience []Experience, err error) {
-	query := "SELECT * FROM [dbo].[Experience] ORDER BY [Id] ASC"
+	query := "SELECT * FROM [dbo].[Experience] WHERE [Hidden] = 0 ORDER BY [Id] ASC"
 
 	rows, err := ds.Database.Select(query)
 	if err != nil {
