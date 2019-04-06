@@ -98,7 +98,7 @@ func (database *Database) SelectByID(query string, id int) (rows *sql.Rows, err 
 }
 
 // Insert ... Inserts record into database
-func (database *Database) Insert(query string, params ...sql.NamedArg) (rowCnt int64, newID int64, err error) {
+func (database *Database) Insert(query string, params ...sql.NamedArg) (newID int64, err error) {
 
 	database.Open()
 	defer database.Close()
@@ -109,13 +109,13 @@ func (database *Database) Insert(query string, params ...sql.NamedArg) (rowCnt i
 
 	if db == nil {
 		err = errors.New("db is null")
-		return 0, -1, err
+		return -1, err
 	}
 
 	// Check if database is alive.
 	err = db.PingContext(ctx)
 	if err != nil {
-		return 0, -1, err
+		return -1, err
 	}
 
 	identitySQL := " SELECT SCOPE_IDENTITY()"
@@ -123,7 +123,7 @@ func (database *Database) Insert(query string, params ...sql.NamedArg) (rowCnt i
 
 	stmt, err := db.Prepare(query)
 	if err != nil {
-		return 0, -1, err
+		return -1, err
 	}
 	defer stmt.Close()
 
@@ -136,10 +136,10 @@ func (database *Database) Insert(query string, params ...sql.NamedArg) (rowCnt i
 
 	err = row.Scan(&newID)
 	if err != nil {
-		return 0, -1, err
+		return -1, err
 	}
 
-	return 0, newID, nil
+	return newID, nil
 }
 
 // Update ... Provides sutible method for updating records

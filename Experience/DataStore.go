@@ -94,7 +94,7 @@ func (ds *ExperienceDataStore) Add(experience Experience) (id int, err error) {
 
 	query := "INSERT INTO [Experience] ([Title],[Description],[Organisation],[DateFrom],[DateTo],[Hidden]) VALUES (@Title,@Desc,@Org,@From,@To,@Hidden)"
 
-	rowsAffected, lastID, err := ds.Database.Insert(query,
+	lastID, err := ds.Database.Insert(query,
 		sql.Named("Title", experience.Title),
 		sql.Named("Desc", experience.Description),
 		sql.Named("Org", experience.Organisation),
@@ -103,10 +103,6 @@ func (ds *ExperienceDataStore) Add(experience Experience) (id int, err error) {
 		sql.Named("Hidden", experience.Hidden))
 	if err != nil {
 		return 0, err
-	}
-
-	if rowsAffected < 1 {
-		return 0, errors.New("No rows affected")
 	}
 
 	return int(lastID), nil

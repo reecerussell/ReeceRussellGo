@@ -96,7 +96,7 @@ func (ds *ProjectDataStore) Add(project Project) (id int, err error) {
 
 	query := "INSERT INTO [Projects] ([Name],[Description],[GithubLink],[ImageUrl],[Teaser],[Hidden]) VALUES (@Name,@Desc,@Git,@Img,@Teaser,@Hidden)"
 
-	rowsAffected, lastID, err := ds.Database.Insert(query,
+	lastID, err := ds.Database.Insert(query,
 		sql.Named("Name", project.Name),
 		sql.Named("Desc", project.Description),
 		sql.Named("Git", project.GithubLink),
@@ -105,10 +105,6 @@ func (ds *ProjectDataStore) Add(project Project) (id int, err error) {
 		sql.Named("Hidden", project.Hidden))
 	if err != nil {
 		return 0, err
-	}
-
-	if rowsAffected < 1 {
-		return 0, errors.New("No rows affected")
 	}
 
 	return int(lastID), nil
