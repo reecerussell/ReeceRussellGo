@@ -30,29 +30,16 @@ func (ds *ExperienceDataStore) GetByID(id int) (experience Experience, err error
 	defer rows.Close()
 
 	for rows.Next() {
-		var (
-			id           int
-			title        string
-			description  string
-			organisation string
-			dateFrom     string
-			dateTo       string
-			hidden       bool
-		)
 
-		err := rows.Scan(&id, &title, &description, &organisation, &dateFrom, &dateTo, &hidden)
+		err := rows.Scan(&experience.ID,
+			&experience.Title,
+			&experience.Description,
+			&experience.Organisation,
+			&experience.DateFrom,
+			&experience.DateTo,
+			&experience.Hidden)
 		if err != nil {
 			return Experience{}, err
-		}
-
-		experience = Experience{
-			ID:           id,
-			Title:        title,
-			Description:  description,
-			Organisation: organisation,
-			DateFrom:     dateFrom,
-			DateTo:       dateTo,
-			Hidden:       hidden,
 		}
 
 		break
@@ -68,7 +55,7 @@ func (ds *ExperienceDataStore) GetByID(id int) (experience Experience, err error
 }
 
 // Get ... Gets projects from table
-func (ds *ExperienceDataStore) Get() (experience []Experience, err error) {
+func (ds *ExperienceDataStore) Get() (experiences []Experience, err error) {
 	query := "SELECT * FROM [dbo].[Experience] WHERE [Hidden] = 0 ORDER BY [Id] ASC"
 
 	rows, err := ds.Database.Select(query)
@@ -79,37 +66,27 @@ func (ds *ExperienceDataStore) Get() (experience []Experience, err error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var (
-			id           int
-			title        string
-			description  string
-			organisation string
-			dateFrom     string
-			dateTo       string
-			hidden       bool
-		)
+		var experience Experience
 
-		err := rows.Scan(&id, &title, &description, &organisation, &dateFrom, &dateTo, &hidden)
+		err := rows.Scan(&experience.ID,
+			&experience.Title,
+			&experience.Description,
+			&experience.Organisation,
+			&experience.DateFrom,
+			&experience.DateTo,
+			&experience.Hidden)
 		if err != nil {
 			return []Experience{}, err
 		}
 
-		experience = append(experience, Experience{
-			ID:           id,
-			Title:        title,
-			Description:  description,
-			Organisation: organisation,
-			DateFrom:     dateFrom,
-			DateTo:       dateTo,
-			Hidden:       hidden,
-		})
+		experiences = append(experiences, experience)
 	}
 	err = rows.Err()
 	if err != nil {
 		return []Experience{}, err
 	}
 
-	return experience, nil
+	return experiences, nil
 }
 
 // Add ... Insert experience to table

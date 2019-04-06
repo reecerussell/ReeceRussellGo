@@ -21,7 +21,6 @@ func (ds *ProjectDataStore) Init(db Database.Database) {
 // GetByID ... Gets project from table
 func (ds *ProjectDataStore) GetByID(id int) (project Project, err error) {
 
-	var proj Project
 	query := "SELECT TOP 1 * FROM [Projects] WHERE [Id] = @Id AND [Hidden] = 0"
 
 	rows, err := ds.Database.SelectByID(query, id)
@@ -32,30 +31,17 @@ func (ds *ProjectDataStore) GetByID(id int) (project Project, err error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var (
-			id          int
-			name        string
-			description string
-			githubLink  string
-			imageURL    string
-			teaser      string
-			hidden      bool
-		)
 
-		err := rows.Scan(&id, &name, &description, &githubLink, &imageURL, &teaser, &hidden)
+		err := rows.Scan(&project.ID,
+			&project.Name,
+			&project.Description,
+			&project.GithubLink,
+			&project.ImageURL,
+			&project.Teaser,
+			&project.Hidden)
 		if err != nil {
 			fmt.Println(err.Error())
 			return Project{}, err
-		}
-
-		proj = Project{
-			ID:          id,
-			Name:        name,
-			Description: description,
-			GithubLink:  githubLink,
-			ImageURL:    imageURL,
-			Teaser:      teaser,
-			Hidden:      hidden,
 		}
 
 		break
@@ -67,7 +53,7 @@ func (ds *ProjectDataStore) GetByID(id int) (project Project, err error) {
 		return Project{}, err
 	}
 
-	return proj, nil
+	return project, nil
 }
 
 // Get ... Gets projects from table
@@ -82,30 +68,20 @@ func (ds *ProjectDataStore) Get() (projects []Project, err error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var (
-			id          int
-			name        string
-			description string
-			githubLink  string
-			imageURL    string
-			teaser      string
-			hidden      bool
-		)
+		var project Project
 
-		err := rows.Scan(&id, &name, &description, &githubLink, &imageURL, &teaser, &hidden)
+		err := rows.Scan(&project.ID,
+			&project.Name,
+			&project.Description,
+			&project.GithubLink,
+			&project.ImageURL,
+			&project.Teaser,
+			&project.Hidden)
 		if err != nil {
 			return []Project{}, err
 		}
 
-		projects = append(projects, Project{
-			ID:          id,
-			Name:        name,
-			Description: description,
-			GithubLink:  githubLink,
-			ImageURL:    imageURL,
-			Teaser:      teaser,
-			Hidden:      hidden,
-		})
+		projects = append(projects, project)
 	}
 	err = rows.Err()
 	if err != nil {
