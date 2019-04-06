@@ -22,7 +22,7 @@ func (ds *ProjectDataStore) Init(db Database.Database) {
 func (ds *ProjectDataStore) GetByID(id int) (project Project, err error) {
 
 	var proj Project
-	query := "SELECT TOP 1 * FROM [Projects] WHERE [Id] = @Id"
+	query := "SELECT TOP 1 * FROM [Projects] WHERE [Id] = @Id AND [Hidden] = 0"
 
 	rows, err := ds.Database.SelectByID(query, id)
 	if err != nil {
@@ -38,9 +38,11 @@ func (ds *ProjectDataStore) GetByID(id int) (project Project, err error) {
 			description string
 			githubLink  string
 			imageURL    string
+			teaser      string
+			hidden      bool
 		)
 
-		err := rows.Scan(&id, &name, &description, &githubLink, &imageURL)
+		err := rows.Scan(&id, &name, &description, &githubLink, &imageURL, &teaser, &hidden)
 		if err != nil {
 			fmt.Println(err.Error())
 			return Project{}, err
@@ -52,6 +54,8 @@ func (ds *ProjectDataStore) GetByID(id int) (project Project, err error) {
 			Description: description,
 			GithubLink:  githubLink,
 			ImageURL:    imageURL,
+			Teaser:      teaser,
+			Hidden:      hidden,
 		}
 
 		break
@@ -68,7 +72,7 @@ func (ds *ProjectDataStore) GetByID(id int) (project Project, err error) {
 
 // Get ... Gets projects from table
 func (ds *ProjectDataStore) Get() (projects []Project, err error) {
-	query := "SELECT * FROM [Projects] ORDER BY [Id] ASC"
+	query := "SELECT * FROM [Projects] WHERE [Hidden] = 1 ORDER BY [Id] ASC"
 
 	rows, err := ds.Database.Select(query)
 	if err != nil {
@@ -84,9 +88,11 @@ func (ds *ProjectDataStore) Get() (projects []Project, err error) {
 			description string
 			githubLink  string
 			imageURL    string
+			teaser      string
+			hidden      bool
 		)
 
-		err := rows.Scan(&id, &name, &description, &githubLink, &imageURL)
+		err := rows.Scan(&id, &name, &description, &githubLink, &imageURL, &teaser, &hidden)
 		if err != nil {
 			return []Project{}, err
 		}
@@ -97,6 +103,8 @@ func (ds *ProjectDataStore) Get() (projects []Project, err error) {
 			Description: description,
 			GithubLink:  githubLink,
 			ImageURL:    imageURL,
+			Teaser:      teaser,
+			Hidden:      hidden,
 		})
 	}
 	err = rows.Err()
@@ -110,13 +118,15 @@ func (ds *ProjectDataStore) Get() (projects []Project, err error) {
 // Add ... Insert project to table
 func (ds *ProjectDataStore) Add(project Project) (id int, err error) {
 
-	query := "INSERT INTO [Projects] ([Name],[Description],[GithubLink],[ImageUrl]) VALUES (@Name,@Desc,@Git,@Img)"
+	query := "INSERT INTO [Projects] ([Name],[Description],[GithubLink],[ImageUrl],[Teaser],[Hidden]) VALUES (@Name,@Desc,@Git,@Img,@Teaser,@Hidden)"
 
 	rowsAffected, lastID, err := ds.Database.Insert(query,
 		sql.Named("Name", project.Name),
 		sql.Named("Desc", project.Description),
 		sql.Named("Git", project.GithubLink),
-		sql.Named("Img", project.ImageURL))
+		sql.Named("Img", project.ImageURL),
+		sql.Named("Teaser", project.Teaser),
+		sql.Named("Hidden", project.Hidden))
 	if err != nil {
 		return 0, err
 	}
@@ -134,13 +144,15 @@ func (ds *ProjectDataStore) Update(project Project) (err error) {
 		return errors.New("Project has no ID")
 	}
 
-	query := "UPDATE [Projects] SET [Name] = @Name, [Description] = @Desc, [GithubLink] = @Git, [ImageUrl] = @Img WHERE [Id] = @Id"
+	query := "UPDATE [Projects] SET [Name] = @Name, [Description] = @Desc, [GithubLink] = @Git, [ImageUrl] = @Img, [Teaser] = @Teaser, [Hidden] = @Hidden WHERE [Id] = @Id"
 
 	rowCnt, err := ds.Database.Update(query,
 		sql.Named("Name", project.Name),
 		sql.Named("Desc", project.Description),
 		sql.Named("Git", project.GithubLink),
 		sql.Named("Img", project.ImageURL),
+		sql.Named("Teaser", project.Teaser),
+		sql.Named("Hidden", project.Hidden),
 		sql.Named("Id", project.ID))
 	if err != nil {
 		return err

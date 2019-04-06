@@ -7,4 +7,6 @@ type Project struct {
 	Description string `json:"description"`
 	GithubLink  string `json:"githubLink"`
 	ImageURL    string `json:"imageUrl"`
+	Teaser      string `json:"teaser"`
+	Hidden      bool   `json:"hidden"`
 }
