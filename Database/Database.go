@@ -98,7 +98,7 @@ func (database *Database) SelectByID(query string, id int) (rows *sql.Rows, err 
 }
 
 // Insert ... Inserts record into database
-func (database *Database) Insert(query string, params ...sql.NamedArg) (rowCnt int64, lastID int64, err error) {
+func (database *Database) Insert(query string, params ...sql.NamedArg) (rowCnt int64, newID int64, err error) {
 
 	database.Open()
 	defer database.Close()
@@ -118,6 +118,9 @@ func (database *Database) Insert(query string, params ...sql.NamedArg) (rowCnt i
 		return 0, -1, err
 	}
 
+	identitySQL := " SELECT SCOPE_IDENTITY()"
+	query = query + identitySQL
+
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		return 0, -1, err
@@ -131,7 +134,6 @@ func (database *Database) Insert(query string, params ...sql.NamedArg) (rowCnt i
 
 	row := stmt.QueryRowContext(ctx, interfaceParams...)
 
-	var newID int64
 	err = row.Scan(&newID)
 	if err != nil {
 		return 0, -1, err

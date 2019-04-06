@@ -58,7 +58,7 @@ func (ds *ProjectDataStore) GetByID(id int) (project Project, err error) {
 
 // Get ... Gets projects from table
 func (ds *ProjectDataStore) Get() (projects []Project, err error) {
-	query := "SELECT * FROM [Projects] WHERE [Hidden] = 1 ORDER BY [Id] ASC"
+	query := "SELECT * FROM [Projects] WHERE [Hidden] = 0 ORDER BY [Id] ASC"
 
 	rows, err := ds.Database.Select(query)
 	if err != nil {
