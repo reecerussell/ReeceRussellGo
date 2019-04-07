@@ -226,7 +226,6 @@ func (ds *DataStore) GetExperience() (experiences []Experience.Experience) {
 		err := rows.Scan(
 			&experience.ID,
 			&experience.Title,
-			&experience.Description,
 			&experience.Organisation,
 			&experience.DateFrom,
 			&experience.DateTo,
@@ -282,7 +281,6 @@ func (ds *DataStore) GetEducation() (educations []Education.Education) {
 		err := rows.Scan(
 			&education.ID,
 			&education.Title,
-			&education.Description,
 			&education.Organisation,
 			&education.DateFrom,
 			&education.DateTo,

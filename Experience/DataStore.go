@@ -33,7 +33,6 @@ func (ds *ExperienceDataStore) GetByID(id int) (experience Experience, err error
 
 		err := rows.Scan(&experience.ID,
 			&experience.Title,
-			&experience.Description,
 			&experience.Organisation,
 			&experience.DateFrom,
 			&experience.DateTo,
@@ -70,7 +69,6 @@ func (ds *ExperienceDataStore) Get() (experiences []Experience, err error) {
 
 		err := rows.Scan(&experience.ID,
 			&experience.Title,
-			&experience.Description,
 			&experience.Organisation,
 			&experience.DateFrom,
 			&experience.DateTo,
@@ -92,11 +90,10 @@ func (ds *ExperienceDataStore) Get() (experiences []Experience, err error) {
 // Add ... Insert experience to table
 func (ds *ExperienceDataStore) Add(experience Experience) (id int, err error) {
 
-	query := "INSERT INTO [Experience] ([Title],[Description],[Organisation],[DateFrom],[DateTo],[Hidden]) VALUES (@Title,@Desc,@Org,@From,@To,@Hidden)"
+	query := "INSERT INTO [Experience] ([Title],[Organisation],[DateFrom],[DateTo],[Hidden]) VALUES (@Title,@Org,@From,@To,@Hidden)"
 
 	lastID, err := ds.Database.Insert(query,
 		sql.Named("Title", experience.Title),
-		sql.Named("Desc", experience.Description),
 		sql.Named("Org", experience.Organisation),
 		sql.Named("From", experience.DateFrom),
 		sql.Named("To", experience.DateTo),
@@ -114,11 +111,10 @@ func (ds *ExperienceDataStore) Update(experience Experience) (err error) {
 		return errors.New("Object has no ID")
 	}
 
-	query := "UPDATE [Experience] SET [Title] = @Title, [Description] = @Desc, [Organisation] = @Org, [DateFrom] = @From, [DateTo] = @To, [Hidden] = @Hidden WHERE [Id] = @Id"
+	query := "UPDATE [Experience] SET [Title] = @Title, [Organisation] = @Org, [DateFrom] = @From, [DateTo] = @To, [Hidden] = @Hidden WHERE [Id] = @Id"
 
 	rowCnt, err := ds.Database.Update(query,
 		sql.Named("Title", experience.Title),
-		sql.Named("Desc", experience.Description),
 		sql.Named("Org", experience.Organisation),
 		sql.Named("From", experience.DateFrom),
 		sql.Named("To", experience.DateTo),
