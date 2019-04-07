@@ -12,6 +12,7 @@ import (
 	"github.com/reecerussell/ReeceRussellGo/Experience"
 	"github.com/reecerussell/ReeceRussellGo/Home"
 	"github.com/reecerussell/ReeceRussellGo/Project"
+	"github.com/reecerussell/ReeceRussellGo/Skills"
 )
 
 func main() {
@@ -39,7 +40,7 @@ func main() {
 
 // InitControllers ... Initialises controllers and functions for http router
 func InitControllers(database Database.Database, router *mux.Router) {
-	homeController := Home.HomeController{}
+	homeController := Home.Controller{}
 	homeController.Init(database, router)
 
 	authController := Authentication.Controller{}
@@ -50,4 +51,7 @@ func InitControllers(database Database.Database, router *mux.Router) {
 
 	experienceController := Experience.Controller{}
 	experienceController.Init(database, router)
+
+	skillController := Skills.Controller{}
+	skillController.Init(database, router)
 }
