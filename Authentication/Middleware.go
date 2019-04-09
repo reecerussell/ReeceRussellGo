@@ -12,10 +12,6 @@ type HandlerFunc func(http.ResponseWriter, *http.Request)
 func Middleware(next HandlerFunc) HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		// Pass straig through auth for development
-		next(w, r)
-		return
-
 		header := r.Header.Get("Authorization")
 
 		if header == "" {
