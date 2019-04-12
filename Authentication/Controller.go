@@ -37,7 +37,7 @@ func (con *Controller) Login(w http.ResponseWriter, r *http.Request) {
 
 	token, err := con.Service.GetAuthToken(loginCredential.Email, loginCredential.Password)
 	if err != nil {
-		fmt.Println("\nError\n")
+		fmt.Println("    Error: " + err.Error() + "     ")
 		Helpers.Status500(w, err.Error())
 		return
 	}
