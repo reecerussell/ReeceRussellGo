@@ -1,13 +1,13 @@
 package Statics
 
 import (
-	"fmt"
 	"io/ioutil"
-	"math/rand"
 	"mime"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/google/uuid"
 
 	"github.com/reecerussell/ReeceRussellGo/Helpers"
 
@@ -23,8 +23,7 @@ func (con *Controller) Init(router *mux.Router) {
 
 	router.HandleFunc("/api/static", con.Upload).Methods("POST")
 
-	fs := http.FileServer(http.Dir("./files"))
-	router.Handle("/files/", http.StripPrefix("/files", fs))
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./files"))))
 }
 
 // Upload ... upload files handler
@@ -32,15 +31,14 @@ func (con *Controller) Upload(w http.ResponseWriter, r *http.Request) {
 	Helpers.Headers(w)
 
 	// validate file size
-	r.Body = http.MaxBytesReader(w, r.Body, 2048)
-	if err := r.ParseMultipartForm(2048); err != nil {
+	r.Body = http.MaxBytesReader(w, r.Body, 2560000)
+	if err := r.ParseMultipartForm(2560000); err != nil {
 		Helpers.Status400(w, "FILE_TOO_BIG")
 		return
 	}
 
 	// parse and validate file and post parameters
-	fileType := r.PostFormValue("type")
-	file, _, err := r.FormFile("uploadFile")
+	file, _, err := r.FormFile("file")
 	if err != nil {
 		Helpers.Status400(w, "INVALID_FILE")
 		return
@@ -62,14 +60,13 @@ func (con *Controller) Upload(w http.ResponseWriter, r *http.Request) {
 		Helpers.Status400(w, "INVALID_FILE_TYPE")
 		return
 	}
-	fileName := RandomString(12)
-	fileEndings, err := mime.ExtensionsByType(fileType)
+	fileName := uuid.New().String()
+	fileEndings, err := mime.ExtensionsByType(filetype)
+	newPath := filepath.Join("./files", fileName+fileEndings[0])
 	if err != nil {
 		Helpers.Status500(w, "CANT_READ_FILE_TYPE")
 		return
 	}
-	newPath := filepath.Join("./files", fileName+fileEndings[0])
-	fmt.Printf("FileType: %s, File: %s\n", fileType, newPath)
 
 	// write file
 	newFile, err := os.Create(newPath)
@@ -82,14 +79,5 @@ func (con *Controller) Upload(w http.ResponseWriter, r *http.Request) {
 		Helpers.Status500(w, "CANT_WRITE_FILE")
 		return
 	}
-	w.Write([]byte("SUCCESS"))
-}
-
-//RandomString - Generate a random string of A-Z chars with len = l
-func RandomString(len int) string {
-	bytes := make([]byte, len)
-	for i := 0; i < len; i++ {
-		bytes[i] = byte(65 + rand.Intn(25)) //A=65 and Z = 65+25
-	}
-	return string(bytes)
+	w.Write([]byte("https://go.reecerussell.com/" + newPath))
 }
