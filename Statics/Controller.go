@@ -17,7 +17,7 @@ type Controller struct {
 
 // Init ... initialise controller
 func (con *Controller) Init(router *mux.Router) {
-	router.Handle("/files/{rest}", http.StripPrefix("/files/", http.FileServer(http.Dir("./files/"))))
+	router.Handle("/files/{rest}", http.StripPrefix("/files/", http.FileServer(http.Dir("./files"))))
 
 	router.HandleFunc("/api/static", con.Upload).Methods("POST")
 }
