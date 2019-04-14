@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/reecerussell/ReeceRussellGo/Authentication"
 	"github.com/reecerussell/ReeceRussellGo/Database"
+	"github.com/reecerussell/ReeceRussellGo/Education"
 	"github.com/reecerussell/ReeceRussellGo/Experience"
 	"github.com/reecerussell/ReeceRussellGo/Home"
 	"github.com/reecerussell/ReeceRussellGo/Project"
@@ -51,6 +52,9 @@ func InitControllers(database Database.Database, router *mux.Router) {
 
 	experienceController := Experience.Controller{}
 	experienceController.Init(database, router)
+
+	educationController := Education.Controller{}
+	educationController.Init(database, router)
 
 	skillController := Skills.Controller{}
 	skillController.Init(database, router)
