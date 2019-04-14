@@ -26,6 +26,8 @@ func (con *Controller) Init(router *mux.Router) {
 func (con *Controller) Upload(w http.ResponseWriter, r *http.Request) {
 	Helpers.Headers(w)
 
+	fmt.Println("Upload File")
+
 	file, handle, err := r.FormFile("file")
 	if err != nil {
 		Helpers.Status400(w, err.Error())
@@ -48,7 +50,7 @@ func (con *Controller) Upload(w http.ResponseWriter, r *http.Request) {
 func saveFile(w http.ResponseWriter, file multipart.File, handle *multipart.FileHeader) {
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
-		fmt.Fprintf(w, "%v", err)
+		Helpers.Status400(w, err.Error())
 		return
 	}
 
@@ -56,7 +58,7 @@ func saveFile(w http.ResponseWriter, file multipart.File, handle *multipart.File
 
 	err = ioutil.WriteFile("./files/"+filePath, data, 0666)
 	if err != nil {
-		fmt.Fprintf(w, "%v", err)
+		Helpers.Status500(w, "Failed to write file")
 		return
 	}
 	w.WriteHeader(200)
