@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/rand"
-	"mime/multipart"
+	"mime"
 	"net/http"
+	"os"
+	"path/filepath"
+
+	"github.com/reecerussell/ReeceRussellGo/Helpers"
 
 	"github.com/gorilla/mux"
-	"github.com/reecerussell/ReeceRussellGo/Helpers"
 )
 
 // Controller ... Static files controller
@@ -17,52 +20,69 @@ type Controller struct {
 
 // Init ... initialise controller
 func (con *Controller) Init(router *mux.Router) {
-	router.Handle("/files/{rest}", http.StripPrefix("/files/", http.FileServer(http.Dir("./files"))))
 
 	router.HandleFunc("/api/static", con.Upload).Methods("POST")
+
+	fs := http.FileServer(http.Dir("./files"))
+	router.Handle("/files/", http.StripPrefix("/files", fs))
 }
 
 // Upload ... upload files handler
 func (con *Controller) Upload(w http.ResponseWriter, r *http.Request) {
 	Helpers.Headers(w)
 
-	fmt.Println("Upload File")
+	// validate file size
+	r.Body = http.MaxBytesReader(w, r.Body, 2048)
+	if err := r.ParseMultipartForm(2048); err != nil {
+		Helpers.Status400(w, "FILE_TOO_BIG")
+		return
+	}
 
-	file, handle, err := r.FormFile("file")
+	// parse and validate file and post parameters
+	fileType := r.PostFormValue("type")
+	file, _, err := r.FormFile("uploadFile")
 	if err != nil {
-		Helpers.Status400(w, err.Error())
+		Helpers.Status400(w, "INVALID_FILE")
 		return
 	}
 	defer file.Close()
+	fileBytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		Helpers.Status400(w, "INVALID_FILE")
+		return
+	}
 
-	mimeType := handle.Header.Get("Content-Type")
-	switch mimeType {
-	case "image/jpeg":
-	case "image/jpg":
-	case "image/gif":
-	case "image/png":
-		saveFile(w, file, handle)
+	// check file type, detectcontenttype only needs the first 512 bytes
+	filetype := http.DetectContentType(fileBytes)
+	switch filetype {
+	case "image/jpeg", "image/jpg":
+	case "image/gif", "image/png":
+		break
 	default:
-		Helpers.Status400(w, "Invalid file type")
-	}
-}
-
-func saveFile(w http.ResponseWriter, file multipart.File, handle *multipart.FileHeader) {
-	data, err := ioutil.ReadAll(file)
-	if err != nil {
-		Helpers.Status400(w, err.Error())
+		Helpers.Status400(w, "INVALID_FILE_TYPE")
 		return
 	}
-
-	filePath := RandomString(32) + handle.Filename
-
-	err = ioutil.WriteFile("./files/"+filePath, data, 0666)
+	fileName := RandomString(12)
+	fileEndings, err := mime.ExtensionsByType(fileType)
 	if err != nil {
-		Helpers.Status500(w, "Failed to write file")
+		Helpers.Status500(w, "CANT_READ_FILE_TYPE")
 		return
 	}
-	w.WriteHeader(200)
-	w.Write([]byte("https://go.reecerussell.com/files/" + filePath))
+	newPath := filepath.Join("./files", fileName+fileEndings[0])
+	fmt.Printf("FileType: %s, File: %s\n", fileType, newPath)
+
+	// write file
+	newFile, err := os.Create(newPath)
+	if err != nil {
+		Helpers.Status500(w, "CANT_WRITE_FILE")
+		return
+	}
+	defer newFile.Close() // idempotent, okay to call twice
+	if _, err := newFile.Write(fileBytes); err != nil || newFile.Close() != nil {
+		Helpers.Status500(w, "CANT_WRITE_FILE")
+		return
+	}
+	w.Write([]byte("SUCCESS"))
 }
 
 //RandomString - Generate a random string of A-Z chars with len = l
