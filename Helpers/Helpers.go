@@ -16,7 +16,7 @@ func Status400(w http.ResponseWriter, message string) {
 
 	response := ResponseMessage{Message: message}
 
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(&response)
 }
 
 // Status500 ... Server Error
@@ -25,7 +25,7 @@ func Status500(w http.ResponseWriter, message string) {
 
 	response := ResponseMessage{Message: message}
 
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(&response)
 }
 
 // Status404 ... Not Found
