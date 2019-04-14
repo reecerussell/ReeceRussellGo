@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/reecerussell/ReeceRussellGo/Authentication"
+
 	"github.com/google/uuid"
 
 	"github.com/reecerussell/ReeceRussellGo/Helpers"
@@ -21,7 +23,7 @@ type Controller struct {
 // Init ... initialise controller
 func (con *Controller) Init(router *mux.Router) {
 
-	router.HandleFunc("/api/static", con.Upload).Methods("POST")
+	router.HandleFunc("/api/static", Authentication.Middleware(con.Upload)).Methods("POST")
 
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./files"))))
 }
@@ -62,7 +64,8 @@ func (con *Controller) Upload(w http.ResponseWriter, r *http.Request) {
 	}
 	fileName := uuid.New().String()
 	fileEndings, err := mime.ExtensionsByType(filetype)
-	newPath := filepath.Join("./files", fileName+fileEndings[0])
+	filePath := fileName + fileEndings[0]
+	newPath := filepath.Join("./files", filePath)
 	if err != nil {
 		Helpers.Status500(w, "CANT_READ_FILE_TYPE")
 		return
@@ -79,5 +82,5 @@ func (con *Controller) Upload(w http.ResponseWriter, r *http.Request) {
 		Helpers.Status500(w, "CANT_WRITE_FILE")
 		return
 	}
-	w.Write([]byte("https://go.reecerussell.com/" + newPath))
+	w.Write([]byte("https://go.reecerussell.com/static" + filePath))
 }
