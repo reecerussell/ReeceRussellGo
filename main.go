@@ -14,6 +14,7 @@ import (
 	"github.com/reecerussell/ReeceRussellGo/Home"
 	"github.com/reecerussell/ReeceRussellGo/Project"
 	"github.com/reecerussell/ReeceRussellGo/Skills"
+	"github.com/reecerussell/ReeceRussellGo/Statics"
 )
 
 func main() {
@@ -58,4 +59,7 @@ func InitControllers(database Database.Database, router *mux.Router) {
 
 	skillController := Skills.Controller{}
 	skillController.Init(database, router)
+
+	staticsController := Statics.Controller{}
+	staticsController.Init(router)
 }
