@@ -13,9 +13,9 @@ import (
 
 var (
 	server           = "54.38.215.159"
-	database         = "ReeceRussell_Portfolio"
-	user             = "ReeceRussell"
-	password         = "Technic600"
+	database         = "ReeceRussell_Backend"
+	user             = "sa"
+	password         = "#Exchange_2013!"
 	connectionString = fmt.Sprintf("server=%s;database=%s;user id=%s; password=%s;", server, database, user, password)
 )
 

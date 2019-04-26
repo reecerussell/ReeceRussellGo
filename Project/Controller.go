@@ -155,6 +155,13 @@ func (con *Controller) Delete(w http.ResponseWriter, r *http.Request) {
 
 // Page ... method for project page
 func (con *Controller) Page(w http.ResponseWriter, r *http.Request) {
+
+	reqHeader := r.Header.Get("Requested-By")
+	if reqHeader != "reecerussell.com" {
+		w.WriteHeader(404)
+		return
+	}
+
 	Helpers.Headers(w)
 
 	params := mux.Vars(r)
