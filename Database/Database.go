@@ -13,10 +13,11 @@ import (
 
 var (
 	server           = "54.38.215.159"
+	port             = "11433"
 	database         = "ReeceRussell_Backend"
 	user             = "sa"
 	password         = "#Exchange_2013!"
-	connectionString = fmt.Sprintf("server=%s;database=%s;user id=%s; password=%s;", server, database, user, password)
+	connectionString = fmt.Sprintf("server=%s;port=%s;database=%s;user id=%s; password=%s;", server, port, database, user, password)
 )
 
 // Database ... Database type
