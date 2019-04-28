@@ -29,12 +29,6 @@ func (con *Controller) Init(
 // GetViewData ... gets data required for home page
 func (con *Controller) GetViewData(w http.ResponseWriter, r *http.Request) {
 
-	reqHeader := r.Header.Get("Requested-By")
-	if reqHeader != "reecerussell.com" {
-		w.WriteHeader(404)
-		return
-	}
-
 	Helpers.Headers(w)
 
 	data := con.DataStore.GetViewData()
