@@ -38,9 +38,11 @@ func main() {
 
 	fmt.Printf("Opened port '%s'\n", port)
 
-	corsObj := handlers.AllowedOrigins([]string{"*", "http://localhost:3001"})
+	corsOrigins := handlers.AllowedOrigins([]string{"*"})
+	corsMethods := handlers.AllowedHeaders([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
+	corsHeaders := handlers.AllowedHeaders([]string{"*"})
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), handlers.CORS(corsObj)(router)))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), handlers.CORS(corsOrigins, corsHeaders, corsMethods)(router)))
 }
 
 // InitControllers ... Initialises controllers and functions for http router
