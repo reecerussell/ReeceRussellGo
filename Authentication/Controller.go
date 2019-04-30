@@ -23,6 +23,12 @@ func (con *Controller) Init(router *mux.Router) {
 
 // Login ... Login method for authentication
 func (con *Controller) Login(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(200)
+		return
+	}
+
 	Helpers.Headers(w)
 
 	var loginCredential LoginCredential
