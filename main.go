@@ -38,7 +38,7 @@ func main() {
 
 	fmt.Printf("Opened port '%s'\n", port)
 
-	corsObj := handlers.AllowedOrigins([]string{"*"})
+	corsObj := handlers.AllowedOrigins([]string{"*", "http://localhost:3001"})
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), handlers.CORS(corsObj)(router)))
 }
