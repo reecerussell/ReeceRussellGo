@@ -37,7 +37,9 @@ func main() {
 		port = productionPort
 	}
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), handlers.CORS()(router)))
+	corsOrigins := handlers.AllowedOrigins([]string{"*"})
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), handlers.CORS(corsOrigins)(router)))
 }
 
 // InitControllers ... Initialises controllers and functions for http router
