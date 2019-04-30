@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 )
 
@@ -44,16 +43,11 @@ func (service *Service) GetAuthToken(email string, password string) (token Acces
 		AppKey:   appKey,
 	}
 
-	fmt.Println("Making request")
-
 	credBytes, err := json.Marshal(credential)
 	if err != nil {
 		return AccessToken{}, err
 	}
 
-	fmt.Println("Parsed json")
-
-	fmt.Printf("Making request to: %s\n", getTokenURL)
 	resp, err := service.HTTPClient.Client.Post(getTokenURL,
 		"application/json",
 		bytes.NewBuffer(credBytes))

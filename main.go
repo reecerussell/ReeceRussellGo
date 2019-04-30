@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/reecerussell/ReeceRussellGo/Authentication"
 	"github.com/reecerussell/ReeceRussellGo/Database"
@@ -37,7 +38,9 @@ func main() {
 
 	fmt.Printf("Opened port '%s'\n", port)
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), router))
+	corsObj := handlers.AllowedOrigins([]string{"*"})
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), handlers.CORS(corsObj)(router)))
 }
 
 // InitControllers ... Initialises controllers and functions for http router

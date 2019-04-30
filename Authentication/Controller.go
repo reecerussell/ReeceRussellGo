@@ -2,7 +2,6 @@ package Authentication
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -19,21 +18,15 @@ func (con *Controller) Init(router *mux.Router) {
 	service := Service{}
 	service.Init()
 
-	router.HandleFunc("/api/auth", con.Login).Methods("POST")
+	router.HandleFunc("/api/auth", con.Login).Methods("POST", "OPTIONS")
 }
 
 // Login ... Login method for authentication
 func (con *Controller) Login(w http.ResponseWriter, r *http.Request) {
 	Helpers.Headers(w)
 
-	fmt.Println("Login method, hit")
-
 	var loginCredential LoginCredential
 	_ = json.NewDecoder(r.Body).Decode(&loginCredential)
-
-	fmt.Println(loginCredential.Email)
-	consts := Constants{}
-	fmt.Println(consts.GetAuthTokenURL())
 
 	token, err := con.Service.GetAuthToken(loginCredential.Email, loginCredential.Password)
 	if err != nil {
