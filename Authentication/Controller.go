@@ -18,7 +18,7 @@ func (con *Controller) Init(router *mux.Router) {
 	service := Service{}
 	service.Init()
 
-	router.HandleFunc("/api/auth", con.Login).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/auth", con.Login).Methods("POST")
 }
 
 // Login ... Login method for authentication
