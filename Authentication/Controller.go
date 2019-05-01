@@ -19,6 +19,7 @@ func (con *Controller) Init(router *mux.Router) {
 	service.Init()
 
 	router.HandleFunc("/api/auth", con.Login).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/auth/check", Middleware(con.Check)).Methods("GET", "OPTIONS")
 }
 
 // Login ... Login method for authentication
@@ -41,4 +42,9 @@ func (con *Controller) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(&token)
+}
+
+// Check ... validates authentication
+func (con *Controller) Check(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(200)
 }
